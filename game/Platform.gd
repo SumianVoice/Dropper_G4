@@ -6,14 +6,21 @@ class_name Platform
 @export var fall_state = 0
 @export var time_to_state = -1
 var selected = false
+@export var audio : AudioStreamPlayer
+@export var drop_sound : AudioStream
 
 @rpc("authority", "call_local")
 func set_fall_state(_state):
 	fall_state = _state
 	if fall_state == 1:
 		time_to_state = 1
+		audio.stream = drop_sound
+		audio.pitch_scale = randf() * 0.2 + 0.95
+		audio.play()
 	if fall_state == 2:
 		time_to_state = 5
+	if fall_state == 3:
+		queue_free()
 
 @rpc("any_peer", "call_local")
 func drop_platform():

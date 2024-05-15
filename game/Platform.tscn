@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://c2m5w3twkhb03"]
+[gd_scene load_steps=10 format=3 uid="uid://c2m5w3twkhb03"]
 
 [ext_resource type="Script" path="res://game/Platform.gd" id="1_4koos"]
 [ext_resource type="Shader" path="res://game/flash3d.gdshader" id="2_uc78g"]
 [ext_resource type="Material" uid="uid://bbn6kwa4mx8lh" path="res://game/Platform_MAT_top.tres" id="3_gnuvl"]
+[ext_resource type="AudioStream" uid="uid://dlwafefaiqfw2" path="res://game/sounds/pmb_stone_dug.ogg" id="3_gryln"]
 [ext_resource type="Material" uid="uid://b7tr2ah1us7ar" path="res://game/Platform_MAT_pillar.tres" id="4_5vd7r"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_r4kms"]
@@ -23,9 +24,11 @@ bottom_radius = 0.2
 [sub_resource type="BoxShape3D" id="BoxShape3D_8thih"]
 size = Vector3(0.9, 0.2, 0.9)
 
-[node name="Platform" type="StaticBody3D"]
+[node name="Platform" type="StaticBody3D" node_paths=PackedStringArray("audio")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0)
 script = ExtResource("1_4koos")
+audio = NodePath("AudioStreamPlayer")
+drop_sound = ExtResource("3_gryln")
 
 [node name="meshes" type="Node3D" parent="."]
 
@@ -43,3 +46,8 @@ skeleton = NodePath("../..")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
 shape = SubResource("BoxShape3D_8thih")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="."]
+max_polyphony = 5
