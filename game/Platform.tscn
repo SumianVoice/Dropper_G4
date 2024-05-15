@@ -1,0 +1,45 @@
+[gd_scene load_steps=9 format=3 uid="uid://c2m5w3twkhb03"]
+
+[ext_resource type="Script" path="res://game/Platform.gd" id="1_4koos"]
+[ext_resource type="Shader" path="res://game/flash3d.gdshader" id="2_uc78g"]
+[ext_resource type="Material" uid="uid://bbn6kwa4mx8lh" path="res://game/Platform_MAT_top.tres" id="3_gnuvl"]
+[ext_resource type="Material" uid="uid://b7tr2ah1us7ar" path="res://game/Platform_MAT_pillar.tres" id="4_5vd7r"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_r4kms"]
+render_priority = 0
+shader = ExtResource("2_uc78g")
+
+[sub_resource type="BoxMesh" id="BoxMesh_j45n5"]
+resource_local_to_scene = true
+material = ExtResource("3_gnuvl")
+size = Vector3(0.9, 4, 0.9)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_j72aq"]
+resource_local_to_scene = true
+material = ExtResource("4_5vd7r")
+top_radius = 0.2
+bottom_radius = 0.2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8thih"]
+size = Vector3(0.9, 0.2, 0.9)
+
+[node name="Platform" type="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0)
+script = ExtResource("1_4koos")
+
+[node name="meshes" type="Node3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="meshes"]
+material_overlay = SubResource("ShaderMaterial_r4kms")
+mesh = SubResource("BoxMesh_j45n5")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="meshes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+visible = false
+mesh = SubResource("CylinderMesh_j72aq")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
+shape = SubResource("BoxShape3D_8thih")

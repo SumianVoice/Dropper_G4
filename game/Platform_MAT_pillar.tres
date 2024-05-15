@@ -1,0 +1,25 @@
+[gd_resource type="StandardMaterial3D" load_steps=4 format=3 uid="uid://b7tr2ah1us7ar"]
+
+[sub_resource type="Gradient" id="Gradient_kp0ur"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ik5aw"]
+seed = 205
+frequency = 0.005
+fractal_type = 2
+fractal_octaves = 6
+fractal_gain = 0.75
+fractal_weighted_strength = 1.0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_w5fim"]
+seamless = true
+as_normal_map = true
+color_ramp = SubResource("Gradient_kp0ur")
+noise = SubResource("FastNoiseLite_ik5aw")
+
+[resource]
+resource_local_to_scene = true
+albedo_color = Color(0.359069, 0.359069, 0.359069, 1)
+emission_enabled = true
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture2D_w5fim")
+uv1_triplanar = true

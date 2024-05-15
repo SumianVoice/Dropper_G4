@@ -1,0 +1,86 @@
+[gd_scene load_steps=3 format=3 uid="uid://mnix72rs812k"]
+
+[ext_resource type="Script" path="res://game/menu.gd" id="1_hp08l"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_6cikk"]
+
+[node name="main" type="Node2D"]
+script = ExtResource("1_hp08l")
+
+[node name="host_status" type="Label" parent="."]
+offset_right = 360.0
+offset_bottom = 40.0
+rotation = -0.00119969
+text = "
+"
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://player.tscn")
+spawn_path = NodePath("..")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+position = Vector2(369, 402)
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(0, 112)
+shape = SubResource("WorldBoundaryShape2D_6cikk")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="main_menu" type="PanelContainer" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 66.0
+offset_top = 202.0
+offset_right = -896.0
+offset_bottom = -208.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/main_menu"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/main_menu/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/main_menu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Game thing"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/main_menu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="host" type="Button" parent="CanvasLayer/main_menu/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "  Host  "
+
+[node name="UPNP_enable" type="CheckButton" parent="CanvasLayer/main_menu/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "UPNP"
+
+[node name="HSeparator" type="HSeparator" parent="CanvasLayer/main_menu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 19
+
+[node name="join" type="Button" parent="CanvasLayer/main_menu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Join"
+
+[node name="address" type="LineEdit" parent="CanvasLayer/main_menu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "127.0.0.1"
+
+[node name="port" type="LineEdit" parent="CanvasLayer/main_menu/MarginContainer/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "9991"
+
+[connection signal="pressed" from="CanvasLayer/main_menu/MarginContainer/VBoxContainer/HBoxContainer/host" to="." method="_on_host_pressed"]
+[connection signal="toggled" from="CanvasLayer/main_menu/MarginContainer/VBoxContainer/HBoxContainer/UPNP_enable" to="." method="_on_upnp_enable_toggled"]
+[connection signal="pressed" from="CanvasLayer/main_menu/MarginContainer/VBoxContainer/join" to="." method="_on_join_pressed"]

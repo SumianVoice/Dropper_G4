@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://twkig57w3j66"]
+
+[ext_resource type="Script" path="res://game/Peer.gd" id="1_d2gy1"]
+
+[node name="peer" type="Node3D"]
+script = ExtResource("1_d2gy1")

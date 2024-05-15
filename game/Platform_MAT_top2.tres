@@ -1,0 +1,17 @@
+[gd_resource type="StandardMaterial3D" load_steps=4 format=3 uid="uid://c2pnt8f3yihi"]
+
+[sub_resource type="Gradient" id="Gradient_qhsuh"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_klkhx"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_rlj0a"]
+seamless = true
+as_normal_map = true
+color_ramp = SubResource("Gradient_qhsuh")
+noise = SubResource("FastNoiseLite_klkhx")
+
+[resource]
+albedo_color = Color(0.941549, 0.849798, 0.73343, 1)
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture2D_rlj0a")
+uv1_triplanar = true
