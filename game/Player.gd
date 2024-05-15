@@ -14,10 +14,10 @@ var alive_time = 0
 
 var drops_used = 0
 
-@rpc("authority", "call_local")
-func use_drop(platform:Platform):
-	drops_used += 1
-	pass
+#@rpc("authority", "call_local")
+#func use_drop(platform:Platform):
+	#drops_used += 1
+	#pass
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")

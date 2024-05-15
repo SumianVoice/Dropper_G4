@@ -147,6 +147,7 @@ static func get_connected_players():
 	return connected_players
 
 func _peer_connected(id):
+	if not is_multiplayer_authority(): return
 	print(str(id) + " PEER was CONNECTED")
 	player_count += 1
 	connected_players[id] = {
@@ -167,5 +168,5 @@ func _peer_disconnected(id):
 	var pnode = instance.players.get_node_or_null(str(id))
 	if pnode:
 		pnode.queue_free()
-	
+
 

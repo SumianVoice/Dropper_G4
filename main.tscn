@@ -135,12 +135,16 @@ droppers = NodePath("../Droppers")
 playerlist = NodePath("../PlayerList")
 player = ExtResource("5_ym2l2")
 
-[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://game/Player.tscn")
-spawn_path = NodePath("../PlayerList")
+[node name="MultiplayerSpawner2" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://game/peer.tscn")
+spawn_path = NodePath("../PeerList")
 
 [node name="PlayerList" type="Node3D" parent="."]
 script = ExtResource("5_kh7iv")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://game/Player.tscn")
+spawn_path = NodePath("../PlayerList")
 
 [node name="Droppers" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
@@ -380,22 +384,6 @@ transform = Transform3D(1, 0, 0, 0, 0.5, -0.866025, 0, 0.866025, 0.5, 0, -0.5244
 visible = false
 mesh = SubResource("SphereMesh_4wa7w")
 skeleton = NodePath("../..")
-
-[node name="RichTextLabel" type="RichTextLabel" parent="Camera3D"]
-offset_left = 207.0
-offset_top = 541.0
-offset_right = 427.0
-offset_bottom = 675.0
-theme_override_font_sizes/normal_font_size = 81
-text = "65"
-
-[node name="RichTextLabel2" type="RichTextLabel" parent="Camera3D"]
-offset_left = 806.0
-offset_top = 547.0
-offset_right = 1026.0
-offset_bottom = 681.0
-theme_override_font_sizes/normal_font_size = 81
-text = "65"
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.283262, -0.840627, -0.461638, 0.371475, -0.539948, 0.75529, -0.884177, 0.0424575, 0.465218, -2.93085, 5.42221, 1.48369)

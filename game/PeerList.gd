@@ -15,15 +15,14 @@ func spawn_players():
 	playerlist.clear_players()
 	for child in get_children():
 		if child is Peer:
-			child.drops = 0
-			print(child.alias)
+			child.set_drops.rpc(0)
 			var dropper = droppers.get_children()[child.team - 1]
 			if dropper:
 				var inst = player.instantiate() as Node3D
 				var id = child.peerid
 				inst.name = str(id)
 				inst.peer = child
-				print(str(id) + " player was created AND SET AUTH")
+				print(str(id) + " player was created")
 				playerlist.add_child(inst, true)
 				var pos = dropper.global_position
 				pos.y += 3
