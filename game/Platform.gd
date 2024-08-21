@@ -50,10 +50,10 @@ var tt = 1
 func _process(delta):
 	if tt > 0: tt -= delta; return
 	if fall_state == 1:
-		set_flash(0)
+		set_flash()
 		shake(delta, 0.05)
 	elif fall_state == 2:
-		set_flash(0)
+		set_flash()
 		position.y -= delta * 2
 	else:
 		shake(delta, 0)
@@ -72,7 +72,7 @@ func _process(delta):
 func select():
 	if selected: return
 	selected = true
-	set_flash(1)
+	set_flash()
 	do_flash(0.1)
 func deselect():
 	if not selected: return
@@ -83,13 +83,13 @@ func deselect():
 var flash_time = 0
 func do_flash(delta):
 	flash_time += delta
-	set_flash(flash_time)
+	set_flash()
 func reset_flash():
 	for mesh_meta in mesh_nodes:
 		var mesh = mesh_meta.obj as MeshInstance3D
 		var mat = mesh.get_active_material(0) as StandardMaterial3D
 		mat.emission.r = 0
-func set_flash(f):
+func set_flash():
 	var s = (sin(flash_time * 10) + 1) * 0.2 + 0.3
 	for mesh_meta in mesh_nodes:
 		var mesh = mesh_meta.obj as MeshInstance3D

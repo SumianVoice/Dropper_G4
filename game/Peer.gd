@@ -31,7 +31,7 @@ func do_gui():
 	var num = get_index()
 	var t1 = $Control/MarginContainer/RichTextLabel as RichTextLabel
 	var margin : MarginContainer = $Control/MarginContainer
-	if get_index() == 0:
+	if num == 0:
 		margin.anchors_preset = 2
 	else:
 		margin.anchors_preset = 3
@@ -52,7 +52,7 @@ func drop_platform(platform:Platform):
 
 var last_raycast
 var selection : Platform
-func do_selection(delta):
+func do_selection(_delta):
 	var new_raycast = do_raycast_from_view()
 	last_raycast = new_raycast
 	

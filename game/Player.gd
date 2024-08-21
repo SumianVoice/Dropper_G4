@@ -44,6 +44,13 @@ func _enter_tree():
 func _ready():
 	pass
 
+@rpc("any_peer", "call_local")
+func shoot_bullet(dir):
+	var bu : Bullet = bulletscene.instantiate()
+	GameManager.instance.add_child(bu, true)
+	bu.set_dir.rpc(Vector3(dir))
+	bu.set_pos.rpc(Vector3(global_position))
+
 var t = 0
 func _physics_process(delta):
 	alive_time += delta
@@ -75,10 +82,7 @@ func _physics_process(delta):
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	
 	if Input.is_action_just_pressed("move_dash") and dash_time <= 0:
-		var bu : Bullet = bulletscene.instantiate()
-		GameManager.instance.add_child(bu, true)
-		bu.set_dir.rpc(Vector3(direction))
-		bu.set_pos.rpc(Vector3(global_position))
+		shoot_bullet.rpc_id(1, direction)
 		#speed *= (1 + Input.get_action_strength("move_dash")*3)
 		#dash_time = dash_time_max
 		#velocity.x = direction.x * speed

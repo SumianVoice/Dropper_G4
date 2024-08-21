@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://game.gd" id="1_5f6uj"]
 [ext_resource type="PackedScene" uid="uid://c2m5w3twkhb03" path="res://game/Platform.tscn" id="1_f3oag"]
-[ext_resource type="PackedScene" uid="uid://ct02ichkf0kqp" path="res://multiplayer/multiplayer_connector.tscn" id="1_iq2vq"]
+[ext_resource type="PackedScene" uid="uid://ct02ichkf0kqp" path="res://multiplayer/mpmenu.tscn" id="1_iq2vq"]
 [ext_resource type="Script" path="res://game/StartButton.gd" id="1_x8ii4"]
 [ext_resource type="Script" path="res://game/PeerList.gd" id="2_81mgq"]
 [ext_resource type="Script" path="res://game/PlayerList.gd" id="5_kh7iv"]
@@ -112,9 +112,9 @@ volumetric_fog_albedo = Color(0.731007, 0.431711, 0.536093, 1)
 [node name="game" type="Node3D"]
 script = ExtResource("1_5f6uj")
 
-[node name="multiplayer_connector" parent="." node_paths=PackedStringArray("players") instance=ExtResource("1_iq2vq")]
+[node name="multiplayer_connector" parent="." node_paths=PackedStringArray("peers_node") instance=ExtResource("1_iq2vq")]
 visible = false
-players = NodePath("../PeerList")
+peers_node = NodePath("../PeerList")
 
 [node name="StartButton" type="Button" parent="."]
 anchors_preset = 5

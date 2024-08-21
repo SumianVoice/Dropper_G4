@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://ct02ichkf0kqp"]
 
-[ext_resource type="Script" path="res://multiplayer/multiplayer_connector.gd" id="1_cxk74"]
-[ext_resource type="PackedScene" uid="uid://twkig57w3j66" path="res://game/peer.tscn" id="2_n574n"]
+[ext_resource type="Script" path="res://multiplayer/mpmenu.gd" id="1_cxk74"]
+[ext_resource type="PackedScene" uid="uid://cf12sx8vjdb8w" path="res://multiplayer/MultiplayerSystem.tscn" id="3_2v670"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_76k2c"]
 bg_color = Color(0.211765, 0.207843, 0.2, 1)
@@ -15,15 +15,15 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="multiplayer_connector" type="CanvasLayer" node_paths=PackedStringArray("main_menu", "alias_node", "address_entry", "port_entry", "host_status", "players")]
+[node name="multiplayer_connector" type="CanvasLayer" node_paths=PackedStringArray("main_menu", "alias_node", "address_entry", "port_entry", "host_status")]
 script = ExtResource("1_cxk74")
 main_menu = NodePath("main_menu_panel")
 alias_node = NodePath("main_menu_panel/MarginContainer/VBoxContainer/alias")
 address_entry = NodePath("main_menu_panel/MarginContainer/VBoxContainer/address")
 port_entry = NodePath("main_menu_panel/MarginContainer/VBoxContainer/port")
 host_status = NodePath("host_status")
-players = NodePath("players")
-peer_scene = ExtResource("2_n574n")
+
+[node name="MultiplayerSystem" parent="." instance=ExtResource("3_2v670")]
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 spawn_path = NodePath("../players")

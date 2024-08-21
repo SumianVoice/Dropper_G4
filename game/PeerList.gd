@@ -7,7 +7,7 @@ extends Node3D
 func _ready():
 	pass
 
-func _process(delta):
+func _process(_delta):
 	pass
 
 func spawn_players():
@@ -27,6 +27,7 @@ func spawn_players():
 				var pos = dropper.global_position
 				pos.y += 3
 				inst.OVERRIDEPOS.rpc(pos)
+				print(pos)
 				if child.team == 1:
 					$"..".player1 = inst
 				elif child.team == 2:
