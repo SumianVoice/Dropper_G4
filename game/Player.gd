@@ -11,6 +11,7 @@ var pos_auth
 @onready var dash_bar = $ProgressBar
 var peerid = 1
 var alive_time = 0
+static var bulletscene : PackedScene = load("res://game/Bullet.tscn")
 
 var drops_used = 0
 
@@ -74,11 +75,15 @@ func _physics_process(delta):
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	
 	if Input.is_action_just_pressed("move_dash") and dash_time <= 0:
-		speed *= (1 + Input.get_action_strength("move_dash")*3)
-		dash_time = dash_time_max
-		velocity.x = direction.x * speed
-		velocity.z = direction.z * speed
-		velocity.y = 2
+		var bu : Bullet = bulletscene.instantiate()
+		GameManager.instance.add_child(bu, true)
+		bu.set_dir.rpc(Vector3(direction))
+		bu.set_pos.rpc(Vector3(global_position))
+		#speed *= (1 + Input.get_action_strength("move_dash")*3)
+		#dash_time = dash_time_max
+		#velocity.x = direction.x * speed
+		#velocity.z = direction.z * speed
+		#velocity.y = 2
 	
 	if direction:
 		velocity.x = move_toward(velocity.x, direction.x * speed, speed*delta*10)

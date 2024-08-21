@@ -151,7 +151,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 script = ExtResource("7_tpnb6")
 
 [node name="1" type="Node3D" parent="Droppers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -2, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, -2, -3)
 metadata/_edit_group_ = true
 
 [node name="Platform" parent="Droppers/1" instance=ExtResource("1_f3oag")]
@@ -263,7 +263,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -2.5)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -2.5)
 
 [node name="2" type="Node3D" parent="Droppers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -2, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, -2, -3)
 metadata/_edit_group_ = true
 
 [node name="Platform" parent="Droppers/2" instance=ExtResource("1_f3oag")]
@@ -407,5 +407,9 @@ metadata/_edit_lock_ = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_2fbka")
+
+[node name="MultiplayerSpawner3" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://game/Bullet.tscn")
+spawn_path = NodePath("..")
 
 [connection signal="pressed" from="StartButton" to="StartButton" method="_on_pressed"]

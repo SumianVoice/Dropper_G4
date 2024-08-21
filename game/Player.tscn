@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://cjy5o060p6pq1"]
+[gd_scene load_steps=6 format=3 uid="uid://cjy5o060p6pq1"]
 
 [ext_resource type="Script" path="res://game/Player.gd" id="1_dhn1r"]
+[ext_resource type="PackedScene" uid="uid://b8tx0vgkyyt1s" path="res://game/Bullet.tscn" id="2_5ti2f"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_psjgw"]
 emission_enabled = true
@@ -31,3 +32,6 @@ offset_bottom = 27.0
 max_value = 1.0
 value = 0.3
 show_percentage = false
+
+[node name="Bullet" parent="." instance=ExtResource("2_5ti2f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)

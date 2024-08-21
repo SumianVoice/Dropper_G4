@@ -20,7 +20,8 @@ func set_fall_state(_state):
 	if fall_state == 2:
 		time_to_state = 5
 	if fall_state == 3:
-		queue_free()
+		#queue_free()
+		pass
 
 @rpc("any_peer", "call_local")
 func drop_platform():

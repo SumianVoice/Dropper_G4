@@ -16,6 +16,7 @@ func _ready():
 
 var matchtime = 0
 func _process(delta):
+	if MultiplayerSystem.server_status != 1: return
 	if not is_multiplayer_authority(): return
 	matchtime += delta
 	drop_add_time -= delta
