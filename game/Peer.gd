@@ -25,7 +25,8 @@ func do_raycast_from_view():
 
 func _enter_tree():
 	set_multiplayer_authority(str(name).to_int())
-	print(("[" + str(multiplayer.get_unique_id()) + "] --> ") + name + "  PEER entered tree and set auth")
+	print(("[" + str(multiplayer.get_unique_id()) + "] --> ") + name + \
+	"  PEER entered tree and set auth")
 
 func do_gui():
 	var num = get_index()
@@ -56,12 +57,14 @@ func do_selection(_delta):
 	var new_raycast = do_raycast_from_view()
 	last_raycast = new_raycast
 	
-	if drops <= 0 or (new_raycast == null) or (new_raycast.get("collider") == null):
+	if drops <= 0 or (new_raycast == null) \
+	or (new_raycast.get("collider") == null):
 		if selection:
 			selection.deselect()
 			selection = null
 	
-	if drops > 0 and (last_raycast.get("collider") and (last_raycast.collider is Platform)
+	if drops > 0 and (last_raycast.get("collider") \
+	and (last_raycast.collider is Platform) \
 	and last_raycast.collider != selection):
 		if selection:
 			selection.deselect()

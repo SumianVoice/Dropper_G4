@@ -55,8 +55,7 @@ var is_on_ceiling: bool
 var ceiling_normal: Vector3 = Vector3.DOWN
 var is_running: bool
 var input_direction: Vector2
-var jump_input: bool
-var run_input: bool
+var input_jump: bool
 
 
 func _ready():
@@ -123,5 +122,4 @@ func process_character_input():
 
 func reset_input():
 	input_direction = Vector2.ZERO
-	jump_input = false
-	run_input = false
+	input_jump = false

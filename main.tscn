@@ -1,16 +1,41 @@
-[gd_scene load_steps=10 format=3 uid="uid://3bj3em7jt84h"]
+[gd_scene load_steps=14 format=3 uid="uid://3bj3em7jt84h"]
 
 [ext_resource type="Script" path="res://game.gd" id="1_5f6uj"]
 [ext_resource type="PackedScene" uid="uid://ct02ichkf0kqp" path="res://multiplayer/mpmenu.tscn" id="1_iq2vq"]
 [ext_resource type="Script" path="res://game/StartButton.gd" id="1_x8ii4"]
 [ext_resource type="Script" path="res://game/PeerList.gd" id="2_81mgq"]
+[ext_resource type="PackedScene" uid="uid://4laa0bo584cf" path="res://src/objects/Player.tscn" id="5_4aisk"]
 [ext_resource type="Script" path="res://game/PlayerList.gd" id="5_kh7iv"]
-[ext_resource type="PackedScene" uid="uid://cjy5o060p6pq1" path="res://game/Player.tscn" id="5_ym2l2"]
 [ext_resource type="Script" path="res://Camera.gd" id="8_2hd7a"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_21w7m"]
 
+[sub_resource type="Gradient" id="Gradient_g80cs"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_g2lu8"]
+noise_type = 0
+fractal_type = 2
+fractal_lacunarity = 1.15
+fractal_gain = 0.86
+fractal_weighted_strength = 0.7
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_rx4ba"]
+width = 2048
+height = 2048
+seamless = true
+as_normal_map = true
+color_ramp = SubResource("Gradient_g80cs")
+noise = SubResource("FastNoiseLite_g2lu8")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bhyaw"]
+albedo_color = Color(0.407334, 0.388729, 0.338729, 1)
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture2D_rx4ba")
+uv1_scale = Vector3(3, 3, 3)
+uv1_triplanar = true
+
 [sub_resource type="BoxMesh" id="BoxMesh_56ov8"]
+material = SubResource("StandardMaterial3D_bhyaw")
 
 [node name="game" type="Node3D"]
 script = ExtResource("1_5f6uj")
@@ -32,11 +57,10 @@ size_flags_horizontal = 4
 text = "Start Game"
 script = ExtResource("1_x8ii4")
 
-[node name="PeerList" type="Node3D" parent="." node_paths=PackedStringArray("droppers", "playerlist")]
+[node name="PeerList" type="Node3D" parent="." node_paths=PackedStringArray("playerlist")]
 script = ExtResource("2_81mgq")
-droppers = NodePath("")
 playerlist = NodePath("../PlayerList")
-player = ExtResource("5_ym2l2")
+player = ExtResource("5_4aisk")
 
 [node name="MultiplayerSpawner2" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://game/peer.tscn")
@@ -46,7 +70,7 @@ spawn_path = NodePath("../PeerList")
 script = ExtResource("5_kh7iv")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://game/Player.tscn")
+_spawnable_scenes = PackedStringArray("res://src/objects/Player.tscn")
 spawn_path = NodePath("../PlayerList")
 
 [node name="Camera3D" type="Camera3D" parent="."]
@@ -61,7 +85,7 @@ shadow_enabled = true
 [node name="Node3D" type="Node3D" parent="."]
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Node3D"]
-transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, -51, 0)
+transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, -50, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D/StaticBody3D"]
 shape = SubResource("BoxShape3D_21w7m")
