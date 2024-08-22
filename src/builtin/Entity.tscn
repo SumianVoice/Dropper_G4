@@ -1,12 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://rq6jch8atuw4"]
+[gd_scene load_steps=2 format=3 uid="uid://il4ta0rjxqny"]
 
-[ext_resource type="Script" path="res://src/builtin/Entity.gd" id="1_hkhpw"]
+[ext_resource type="Script" path="res://src/builtin/Entity.gd" id="1_4l5cq"]
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wnrtd"]
-height = 1.0
-
-[node name="Entity" type="CharacterBody3D"]
-script = ExtResource("1_hkhpw")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-shape = SubResource("CapsuleShape3D_wnrtd")
+[node name="Entity" type="RigidBody3D"]
+script = ExtResource("1_4l5cq")

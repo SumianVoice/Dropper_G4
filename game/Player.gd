@@ -32,7 +32,7 @@ func OVERRIDEPOS(pos):
 
 @rpc("authority", "call_remote")
 func update_position(pos):
-	if alive_time < 0.01:
+	if alive_time < 0.1:
 		global_position = OVERRIDEPOS_
 		return
 	pos_auth = pos

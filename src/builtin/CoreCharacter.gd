@@ -1,27 +1,19 @@
-extends RigidBody3D
-class_name Entity
-
-static var scene = preload("res://src/builtin/Entity.tscn")
+extends RigidCharacterBody3D
+class_name CoreCharacter
 
 var physics_timescale : float = 1
-var components_list : Array = []
-
 
 func _physics_process(delta):
 	if not MultiplayerSystem.is_auth(self): return
 	delta *= physics_timescale
 	linear_velocity.y -= 9 * delta
+	super(delta)
 
 func _process(delta):
-	if not MultiplayerSystem.is_auth(self):
+	if MultiplayerSystem.is_auth(self):
 		auth_multiplayer_sync(delta)
 	else:
 		client_multiplayer_sync(delta)
-
-
-@rpc("authority", "call_local")
-func add_component(component:EntityComponent):
-	add_child(component, true)
 
 
 ###################
@@ -34,6 +26,11 @@ var s_rot_difference : Vector3 = Vector3(0,0,0)
 var _network_tick = 0.5
 var _network_enable = true
 
+
+@rpc("any_peer", "call_local")
+func set_auth(id):
+	if multiplayer.get_remote_sender_id() != 1: return
+	set_multiplayer_authority(id, true)
 
 func auth_multiplayer_sync(delta):
 	if not _network_enable: return
@@ -54,7 +51,7 @@ func client_multiplayer_sync(delta):
 		global_rotation += interp
 
 
-@rpc("authority", "call_remote")
+@rpc("authority", "call_local")
 func update_velocity(vel:Vector3):
 	linear_velocity = vel
 @rpc("authority", "call_local")

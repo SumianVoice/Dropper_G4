@@ -1,0 +1,415 @@
+[gd_scene load_steps=29 format=3 uid="uid://djqqt01vgx7sx"]
+
+[ext_resource type="Script" path="res://game.gd" id="1_8aeaw"]
+[ext_resource type="PackedScene" uid="uid://ct02ichkf0kqp" path="res://multiplayer/mpmenu.tscn" id="2_b3wwh"]
+[ext_resource type="Script" path="res://game/StartButton.gd" id="3_3jft1"]
+[ext_resource type="Script" path="res://game/PeerList.gd" id="4_0aqcg"]
+[ext_resource type="PackedScene" uid="uid://cjy5o060p6pq1" path="res://game/Player.tscn" id="5_d88s4"]
+[ext_resource type="Script" path="res://game/PlayerList.gd" id="6_gvrag"]
+[ext_resource type="Script" path="res://Droppers.gd" id="7_fh0ry"]
+[ext_resource type="PackedScene" uid="uid://c2m5w3twkhb03" path="res://game/Platform.tscn" id="8_hj8gl"]
+[ext_resource type="Script" path="res://Camera.gd" id="9_581kp"]
+[ext_resource type="Shader" path="res://game/lava.gdshader" id="10_uvjcr"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_4wa7w"]
+radius = 0.1
+height = 0.2
+radial_segments = 12
+rings = 6
+
+[sub_resource type="Gradient" id="Gradient_lxebb"]
+offsets = PackedFloat32Array(0.196078, 0.588235, 0.769608, 1)
+colors = PackedColorArray(0.915304, 0.312666, 0.0163259, 1, 0.898103, 0, 0.0246555, 1, 0.923561, 0.462745, 0.0123277, 1, 0.94902, 0.92549, 0, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_jmsq1"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_jakvw"]
+seamless = true
+color_ramp = SubResource("Gradient_lxebb")
+noise = SubResource("FastNoiseLite_jmsq1")
+
+[sub_resource type="Gradient" id="Gradient_3klqq"]
+offsets = PackedFloat32Array(0.421569, 0.470588)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_25n7n"]
+frequency = 0.0175
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_sjbpq"]
+seamless = true
+color_ramp = SubResource("Gradient_3klqq")
+noise = SubResource("FastNoiseLite_25n7n")
+
+[sub_resource type="Gradient" id="Gradient_5paid"]
+offsets = PackedFloat32Array(0.377451, 0.441176)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_24pk8"]
+frequency = 0.0115
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_nvtfm"]
+seamless = true
+color_ramp = SubResource("Gradient_5paid")
+noise = SubResource("FastNoiseLite_24pk8")
+
+[sub_resource type="Gradient" id="Gradient_1i0yf"]
+offsets = PackedFloat32Array(0, 0.480392)
+colors = PackedColorArray(0, 0, 0, 1, 0.0109662, 0.0106458, 0.0144948, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_mjiym"]
+fractal_type = 2
+fractal_octaves = 4
+fractal_lacunarity = 2.29
+domain_warp_amplitude = 35.115
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_owfpn"]
+color_ramp = SubResource("Gradient_1i0yf")
+noise = SubResource("FastNoiseLite_mjiym")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wtbn2"]
+render_priority = 0
+shader = ExtResource("10_uvjcr")
+shader_parameter/uv_scale = 8.0
+shader_parameter/scroll = 0.01
+shader_parameter/ng_lava_mask = SubResource("NoiseTexture2D_sjbpq")
+shader_parameter/ng_lava_mask2 = SubResource("NoiseTexture2D_nvtfm")
+shader_parameter/ng_lava = SubResource("NoiseTexture2D_jakvw")
+shader_parameter/ng_stone = SubResource("NoiseTexture2D_owfpn")
+
+[sub_resource type="QuadMesh" id="QuadMesh_2gqoe"]
+material = SubResource("ShaderMaterial_wtbn2")
+size = Vector2(100, 100)
+subdivide_width = 4
+subdivide_depth = 4
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_expdu"]
+sky_top_color = Color(0.568662, 0.679032, 0.803077, 1)
+ground_bottom_color = Color(0.295076, 0.365146, 0.263025, 1)
+ground_horizon_color = Color(0.555847, 0.565993, 0.58201, 1)
+
+[sub_resource type="Sky" id="Sky_hkm4v"]
+sky_material = SubResource("ProceduralSkyMaterial_expdu")
+
+[sub_resource type="Environment" id="Environment_2fbka"]
+background_mode = 2
+sky = SubResource("Sky_hkm4v")
+ssao_enabled = true
+ssao_radius = 0.35
+ssao_intensity = 19.5
+ssao_power = 0.512266
+sdfgi_enabled = true
+glow_enabled = true
+glow_intensity = 5.96
+glow_strength = 0.33
+glow_bloom = 0.42
+fog_enabled = true
+fog_light_color = Color(0.582494, 0.0178695, 1.92523e-07, 1)
+fog_light_energy = 2.96
+fog_density = 0.0
+fog_height = 2.9
+fog_height_density = 0.411
+volumetric_fog_density = 0.0345
+volumetric_fog_albedo = Color(0.731007, 0.431711, 0.536093, 1)
+
+[node name="game" type="Node3D"]
+script = ExtResource("1_8aeaw")
+
+[node name="multiplayer_connector" parent="." node_paths=PackedStringArray("peers_node") instance=ExtResource("2_b3wwh")]
+visible = false
+peers_node = NodePath("../PeerList")
+
+[node name="StartButton" type="Button" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -103.0
+offset_top = 12.0
+offset_right = 107.0
+offset_bottom = 65.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+text = "Start Game"
+script = ExtResource("3_3jft1")
+
+[node name="PeerList" type="Node3D" parent="." node_paths=PackedStringArray("droppers", "playerlist")]
+script = ExtResource("4_0aqcg")
+droppers = NodePath("../Droppers")
+playerlist = NodePath("../PlayerList")
+player = ExtResource("5_d88s4")
+
+[node name="MultiplayerSpawner2" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://game/peer.tscn")
+spawn_path = NodePath("../PeerList")
+
+[node name="PlayerList" type="Node3D" parent="."]
+script = ExtResource("6_gvrag")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://game/Player.tscn")
+spawn_path = NodePath("../PlayerList")
+
+[node name="Droppers" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+script = ExtResource("7_fh0ry")
+
+[node name="1" type="Node3D" parent="Droppers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, -2, -3)
+metadata/_edit_group_ = true
+
+[node name="Platform" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 2.5)
+
+[node name="Platform2" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 2.5)
+
+[node name="Platform3" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 2.5)
+
+[node name="Platform4" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 2.5)
+
+[node name="Platform5" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 2.5)
+
+[node name="Platform6" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 2.5)
+
+[node name="Platform7" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 1.5)
+
+[node name="Platform8" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 1.5)
+
+[node name="Platform9" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 1.5)
+
+[node name="Platform10" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 1.5)
+
+[node name="Platform11" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 1.5)
+
+[node name="Platform12" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 1.5)
+
+[node name="Platform13" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 0.5)
+
+[node name="Platform14" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 0.5)
+
+[node name="Platform15" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0.5)
+
+[node name="Platform16" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0.5)
+
+[node name="Platform17" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 0.5)
+
+[node name="Platform18" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 0.5)
+
+[node name="Platform19" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -0.5)
+
+[node name="Platform20" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -0.5)
+
+[node name="Platform21" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, -0.5)
+
+[node name="Platform22" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, -0.5)
+
+[node name="Platform23" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -0.5)
+
+[node name="Platform24" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -0.5)
+
+[node name="Platform25" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -1.5)
+
+[node name="Platform26" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -1.5)
+
+[node name="Platform27" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, -1.5)
+
+[node name="Platform28" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, -1.5)
+
+[node name="Platform29" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -1.5)
+
+[node name="Platform30" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -1.5)
+
+[node name="Platform31" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -2.5)
+
+[node name="Platform32" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -2.5)
+
+[node name="Platform33" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, -2.5)
+
+[node name="Platform34" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, -2.5)
+
+[node name="Platform35" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -2.5)
+
+[node name="Platform36" parent="Droppers/1" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -2.5)
+
+[node name="2" type="Node3D" parent="Droppers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, -2, -3)
+metadata/_edit_group_ = true
+
+[node name="Platform" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 2.5)
+
+[node name="Platform2" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 2.5)
+
+[node name="Platform3" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 2.5)
+
+[node name="Platform4" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 2.5)
+
+[node name="Platform5" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 2.5)
+
+[node name="Platform6" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 2.5)
+
+[node name="Platform7" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 1.5)
+
+[node name="Platform8" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 1.5)
+
+[node name="Platform9" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 1.5)
+
+[node name="Platform10" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 1.5)
+
+[node name="Platform11" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 1.5)
+
+[node name="Platform12" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 1.5)
+
+[node name="Platform13" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 0.5)
+
+[node name="Platform14" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 0.5)
+
+[node name="Platform15" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0.5)
+
+[node name="Platform16" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0.5)
+
+[node name="Platform17" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 0.5)
+
+[node name="Platform18" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 0.5)
+
+[node name="Platform19" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -0.5)
+
+[node name="Platform20" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -0.5)
+
+[node name="Platform21" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, -0.5)
+
+[node name="Platform22" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, -0.5)
+
+[node name="Platform23" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -0.5)
+
+[node name="Platform24" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -0.5)
+
+[node name="Platform25" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -1.5)
+
+[node name="Platform26" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -1.5)
+
+[node name="Platform27" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, -1.5)
+
+[node name="Platform28" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, -1.5)
+
+[node name="Platform29" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -1.5)
+
+[node name="Platform30" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -1.5)
+
+[node name="Platform31" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -2.5)
+
+[node name="Platform32" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -2.5)
+
+[node name="Platform33" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, -2.5)
+
+[node name="Platform34" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, -2.5)
+
+[node name="Platform35" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -2.5)
+
+[node name="Platform36" parent="Droppers/2" instance=ExtResource("8_hj8gl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -2.5)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 14, 4.70381)
+fov = 40.0
+script = ExtResource("9_581kp")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 0.5, -0.866025, 0, 0.866025, 0.5, 0, -0.524457, -4.31601)
+visible = false
+mesh = SubResource("SphereMesh_4wa7w")
+skeleton = NodePath("../..")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.283262, -0.840627, -0.461638, 0.371475, -0.539948, 0.75529, -0.884177, 0.0424575, 0.465218, -2.93085, 5.42221, 1.48369)
+light_color = Color(0.985569, 0.611575, 0.592208, 1)
+light_indirect_energy = 0.0
+light_angular_distance = 2.45
+shadow_enabled = true
+
+[node name="DirectionalLight3D2" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.938267, -0.344803, -0.0276851, 0.0765365, 0.284985, -0.955471, 0.33734, 0.894368, 0.293782, 0, 1, 3)
+light_color = Color(0.883469, 0.348746, 0, 1)
+light_energy = 8.075
+light_indirect_energy = 0.0
+light_angular_distance = 2.45
+shadow_enabled = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("QuadMesh_2gqoe")
+metadata/_edit_lock_ = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_2fbka")
+
+[node name="MultiplayerSpawner3" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://game/Bullet.tscn")
+spawn_path = NodePath("..")
+
+[connection signal="pressed" from="StartButton" to="StartButton" method="_on_pressed"]

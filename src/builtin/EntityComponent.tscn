@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://b0as7pirn1m5e"]
+
+[ext_resource type="Script" path="res://src/builtin/EntityComponent.gd" id="1_c6v41"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_m368j"]
+
+[node name="Component" type="CollisionShape3D"]
+shape = SubResource("BoxShape3D_m368j")
+script = ExtResource("1_c6v41")
+
+[node name="Area3D" type="Area3D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
