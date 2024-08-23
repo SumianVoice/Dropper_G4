@@ -12,7 +12,8 @@ var delete_on_no_nodes : bool = true
 
 
 func _ready():
-	print("[SPAWN]" + str(multiplayer.get_unique_id()) + "  SPAWNED --> NAME " + name)
+	print("[SPAWN] PID " + str(multiplayer.get_unique_id()) +\
+	"   SPAWNED NAME   " + name)
 
 func _physics_process(delta):
 	if not MultiplayerSystem.is_auth(self): return
@@ -23,7 +24,8 @@ func _process(delta):
 	if MultiplayerSystem.is_auth(self):
 		auth_multiplayer_sync(delta)
 		if delete_on_no_nodes and get_child_count() < 1:
-			print("[DESTROY]" + str(multiplayer.get_unique_id()) + "  DESTROYED --> " + name)
+			print("[DESTROY] PID " + str(multiplayer.get_unique_id()) +\
+			"   DESTROYED NAME   " + name)
 			queue_free()
 	else:
 		client_multiplayer_sync(delta)
@@ -70,7 +72,7 @@ func update_velocity(vel:Vector3):
 	linear_velocity = vel
 @rpc("authority", "call_local")
 func update_pos(pos:Vector3):
-	s_pos_difference = global_position - pos
+	s_pos_difference = pos - global_position
 @rpc("authority", "call_local")
 func update_rotation(rot:Vector3):
-	s_rot_difference = global_position - rot
+	s_rot_difference = rot - global_position

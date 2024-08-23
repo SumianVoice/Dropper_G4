@@ -33,6 +33,15 @@ func _input(event):
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		else:
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	
+	if Input.is_action_just_pressed("move_jump"):
+		var path = "res://src/objects/components/ec_test_component.tscn"
+		var com : EntityComponentHost = load(path).instantiate()
+		com.name = str(randi()) + "COM"
+		GameManager.world.add_child(com, true)
+		GameManager.instance.spawn_object.rpc(path, com.name)
+		com.global_position.y += 2
+		print("CREATED A COMPONENT")
 
 func _process(delta):
 	super(delta)
@@ -98,16 +107,9 @@ func apply_movement(delta: float):
 	var right = forward.cross(floor_normal)
 	var dir = ((forward * input_direction.y) + (right * input_direction.x)).normalized()
 	if dir:
-		var move_forc = (air_force if not is_on_floor else run_force
+		var move_force = (air_force if not is_on_floor else run_force
 			if is_running else walk_force)
-		apply_central_impulse(dir * move_forc * delta)
-	
-	if Input.is_action_just_pressed("move_jump"):
-		var com : EntityComponentHost = \
-			load("res://src/objects/components/ec_test_component.tscn").instantiate()
-		com.name = str(randi())
-		GameManager.world.add_child(com, true)
-		com.global_position.y += 2
+		apply_central_impulse(dir * move_force * delta)
 
 
 func get_ray_selected():
@@ -166,6 +168,3 @@ func client_multiplayer_sync(delta):
 @rpc("authority", "call_local")
 func update_look_rotation(rot:Vector3):
 	s_look_rot = rot
-	#s_look_rot_difference = rot - camera.global_rotation
-	#camera.rotation = rot
-	#visuals.rotation.y = rot.y

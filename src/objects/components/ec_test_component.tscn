@@ -1,10 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://dow3hyi7ktbtg"]
+[gd_scene load_steps=4 format=3 uid="uid://dow3hyi7ktbtg"]
 
 [ext_resource type="PackedScene" uid="uid://b0as7pirn1m5e" path="res://src/builtin/EntityComponent.tscn" id="1_st1lh"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n7ftt"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_ppd7h"]
 
 [node name="EntityComponent" instance=ExtResource("1_st1lh")]
+
+[node name="Component" parent="." index="0"]
+shape = SubResource("BoxShape3D_n7ftt")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Component" index="0"]
 mesh = SubResource("BoxMesh_ppd7h")
