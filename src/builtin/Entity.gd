@@ -1,10 +1,14 @@
 extends RigidBody3D
 class_name Entity
 
-static var scene = preload("res://src/builtin/Entity.tscn")
+static var scene_path = "res://src/builtin/Entity.tscn"
+static var scene : PackedScene
+static func instantiate():
+	if not scene: scene = load(scene_path)
+	return scene.instantiate()
 
 var physics_timescale : float = 1
-var components_list : Array = []
+var delete_on_no_nodes : bool = true
 
 
 func _physics_process(delta):
@@ -17,11 +21,15 @@ func _process(delta):
 		auth_multiplayer_sync(delta)
 	else:
 		client_multiplayer_sync(delta)
+	
+	if delete_on_no_nodes and get_child_count() < 1:
+		queue_free()
 
 
 @rpc("authority", "call_local")
-func add_component(component:EntityComponent):
-	add_child(component, true)
+func add_component(component:EntityComponent, rel_pos):
+	component.reparent(self, true)
+	component.position = rel_pos
 
 
 ###################
@@ -42,7 +50,7 @@ func auth_multiplayer_sync(delta):
 	update_pos.rpc(global_position)
 	update_velocity.rpc(linear_velocity)
 
-func client_multiplayer_sync(delta):
+func client_multiplayer_sync(_delta):
 	if not _network_enable: return
 	if s_pos_difference.length_squared() > 0.2:
 		var interp = lerp(Vector3.ZERO, s_pos_difference, 0.05)

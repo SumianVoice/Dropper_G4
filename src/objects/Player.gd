@@ -9,11 +9,15 @@ var since_jump : float = 0
 
 var inhabited = false
 
+var picked_up : Node3D
+
 var peer
 
 @onready var collision : CollisionShape3D = $collision
 @onready var camera : Camera3D = $camera
 @onready var visuals : Node3D = $visuals
+@onready var raycast_select : RayCast3D = $camera/raycast_select
+@onready var drag_node : Node3D = $camera/drag_node
 
 func _input(event):
 	if not MultiplayerSystem.is_auth(self): return
@@ -43,6 +47,8 @@ func _process(delta):
 		if inhabited:
 			inhabited = false
 			deinhabit()
+	
+	on_step_pickup(delta)
 
 
 func _ready():
@@ -92,6 +98,30 @@ func apply_movement(delta: float):
 	if dir:
 		var move_forc = air_force if not is_on_floor else run_force if is_running else walk_force
 		apply_central_impulse(dir * move_forc * delta)
+
+
+func get_ray_selected():
+	if not Input.is_action_just_pressed("interact"): return
+	if not raycast_select.is_colliding(): return null
+	print(raycast_select.get_collider())
+	return raycast_select.get_collider()
+
+func on_step_pickup(_delta):
+	if picked_up == null:
+		var sel = get_ray_selected()
+		if sel: sel = sel.get_parent()
+		if (sel is EntityComponent) and (sel.get_parent() is Entity):
+			sel = sel as EntityComponent
+			picked_up = sel
+			picked_up.on_pickup(self, null)
+			print("PICK UP")
+	elif Input.is_action_just_released("interact") and picked_up != null:
+		picked_up.on_drop(self, null)
+		picked_up = null
+		print("DROPPED")
+	if picked_up == null: return
+	
+	picked_up.global_position = drag_node.global_position
 
 
 

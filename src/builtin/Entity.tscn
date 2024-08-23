@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://il4ta0rjxqny"]
+[gd_scene load_steps=2 format=3 uid="uid://cki6vxyjpk8jp"]
 
-[ext_resource type="Script" path="res://src/builtin/Entity.gd" id="1_4l5cq"]
+[ext_resource type="Script" path="res://src/builtin/Entity.gd" id="1_nfn3m"]
 
 [node name="Entity" type="RigidBody3D"]
-script = ExtResource("1_4l5cq")
+script = ExtResource("1_nfn3m")
