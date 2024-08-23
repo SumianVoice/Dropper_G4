@@ -15,7 +15,7 @@ static func instantiate():
 
 var reparent_grace = 1
 
-var picked_up : bool = false
+var picked_up_by = null
 
 func _ready():
 	var col : CollisionShape3D = $Component/Area3D/CollisionShape3D
@@ -33,14 +33,14 @@ func _reparent(to_node, rel_pos=null):
 	print(" reparent set to " + str(to_node))
 	if to_node == null: return
 	component.reparent(to_node, true)
-	if rel_pos == null: rel_pos = position
+	if rel_pos == null: rel_pos = Vector3(0,0,0)
 	component.position = rel_pos
 
 func check_has_entity_parent():
 	if not MultiplayerSystem.is_auth(self): return
 	if reparent_grace > 0: return
 	var parent = component.get_parent()
-	if (not picked_up) and (not (parent is Entity)):
+	if (not picked_up_by) and (not (parent is Entity)):
 		reparent_grace = 0.5
 		print("  REPARENTING --> PID " + str(multiplayer.get_unique_id()))
 		var new_ent : Entity = Entity.instantiate()
@@ -51,16 +51,20 @@ func check_has_entity_parent():
 		new_ent.global_position = component.global_position
 		new_ent.update_pos.rpc(component.global_position)
 		#print(new_ent.get_path())
-		var rel_pos = component.global_position - new_ent.global_position
 		_reparent.rpc(new_ent.get_path(), null)
 
 func on_drop(_player, _wield):
-	picked_up = false
+	picked_up_by = null
 
 func on_pickup(_player, _wield):
 	print("pickup")
 	_reparent.rpc(GameManager.world.get_path(), null)
-	picked_up = true
+	picked_up_by = _player
 
 func on_interact(_player, _wield):
 	on_pickup.rpc(_player, _wield)
+
+@rpc("any_peer", "call_local")
+func request_pickup(_player, _wield):
+	pass
+

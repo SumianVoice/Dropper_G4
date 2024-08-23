@@ -36,10 +36,8 @@ func _input(event):
 	
 	if Input.is_action_just_pressed("move_jump"):
 		var path = "res://src/objects/components/ec_test_component.tscn"
-		var com : EntityComponentHost = load(path).instantiate()
-		com.name = str(randi()) + "COM"
-		GameManager.world.add_child(com, true)
-		GameManager.instance.spawn_object.rpc(path, com.name)
+		var com : EntityComponentHost =\
+			GameManager.instance.spawn_object(path, str(randi()) + "COM")
 		com.global_position.y += 2
 		print("CREATED A COMPONENT")
 
