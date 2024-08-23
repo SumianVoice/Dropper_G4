@@ -1,0 +1,56 @@
+extends Node3D
+class_name EntityComponentHost
+
+static var scene_path = "res://src/builtin/EntityComponent.tscn"
+static var scene : PackedScene
+static func instantiate():
+	if not scene: scene = load(scene_path)
+	return scene.instantiate()
+
+@export var component : CollisionShape3D
+
+@export var lift : float = 0
+@export var torque : float = 0
+@export var speed : float = 0
+
+var picked_up : bool = false
+
+func _ready():
+	var col : CollisionShape3D = $Component/Area3D/CollisionShape3D
+	if not component: component = $Component
+	col.shape = component.shape
+
+func _process(_delta):
+	if not MultiplayerSystem.is_auth(self): return
+	check_has_entity_parent()
+
+@rpc("authority", "call_local")
+func _reparent(to_node, keep_transform=true):
+	to_node = get_tree().root.get_node_or_null(to_node)
+	print(to_node)
+	if to_node == null: return
+	component.reparent(to_node, keep_transform)
+
+func check_has_entity_parent():
+	if not MultiplayerSystem.is_auth(self): return
+	var parent = component.get_parent()
+	if (not picked_up) and (not (parent is Entity)):
+		var new_ent : Entity = Entity.instantiate()
+		new_ent.name = str(randi()) + "ENT"
+		#GameManager.world_spawner.spawn(new_ent)
+		GameManager.world.add_child(new_ent)
+		new_ent.global_position = component.global_position
+		new_ent.update_pos.rpc(component.global_position)
+		#print(new_ent.get_path())
+		_reparent.rpc(new_ent.get_path())
+
+func on_drop(_player, _wield):
+	picked_up = false
+
+func on_pickup(_player, _wield):
+	print("pickup")
+	_reparent.rpc(GameManager.world.get_path(), true)
+	picked_up = true
+
+func on_interact(_player, _wield):
+	on_pickup.rpc(_player, _wield)

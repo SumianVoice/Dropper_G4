@@ -6,9 +6,13 @@ var player1
 var player2
 
 static var instance : GameManager
+static var world : Node3D
+static var world_spawner : MultiplayerSpawner
 
 func _ready():
 	instance = self
+	world = $world
+	world_spawner = $MultiplayerSpawnerRoot
 
 var matchtime = 0
 func _process(delta):

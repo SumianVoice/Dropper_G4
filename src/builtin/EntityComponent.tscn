@@ -1,12 +1,17 @@
-[gd_scene load_steps=2 format=3 uid="uid://b0as7pirn1m5e"]
+[gd_scene load_steps=3 format=3 uid="uid://b0as7pirn1m5e"]
 
 [ext_resource type="Script" path="res://src/builtin/EntityComponent.gd" id="1_c6v41"]
+[ext_resource type="Script" path="res://src/builtin/EntityComponentHost.gd" id="1_noby0"]
 
-[node name="Component" type="CollisionShape3D"]
+[node name="EntityComponent" type="Node3D" node_paths=PackedStringArray("component")]
+script = ExtResource("1_noby0")
+component = NodePath("Component")
+
+[node name="Component" type="CollisionShape3D" parent="."]
 script = ExtResource("1_c6v41")
 
-[node name="Area3D" type="Area3D" parent="."]
+[node name="Area3D" type="Area3D" parent="Component"]
 collision_layer = 2
 collision_mask = 2
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Component/Area3D"]

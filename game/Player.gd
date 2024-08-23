@@ -47,7 +47,7 @@ func _ready():
 @rpc("any_peer", "call_local")
 func shoot_bullet(dir):
 	var bu : Bullet = bulletscene.instantiate()
-	GameManager.instance.add_child(bu, true)
+	GameManager.world.add_child(bu, true)
 	bu.set_dir.rpc(Vector3(dir))
 	bu.set_pos.rpc(Vector3(global_position))
 

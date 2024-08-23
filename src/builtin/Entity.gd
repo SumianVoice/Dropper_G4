@@ -11,19 +11,22 @@ var physics_timescale : float = 1
 var delete_on_no_nodes : bool = true
 
 
+func _ready():
+	print("[SPAWN]" + str(multiplayer.get_unique_id()) + "  SPAWNED --> NAME " + name)
+
 func _physics_process(delta):
 	if not MultiplayerSystem.is_auth(self): return
 	delta *= physics_timescale
 	linear_velocity.y -= 9 * delta
 
 func _process(delta):
-	if not MultiplayerSystem.is_auth(self):
+	if MultiplayerSystem.is_auth(self):
 		auth_multiplayer_sync(delta)
+		if delete_on_no_nodes and get_child_count() < 1:
+			print("[DESTROY]" + str(multiplayer.get_unique_id()) + "  DESTROYED --> " + name)
+			queue_free()
 	else:
 		client_multiplayer_sync(delta)
-	
-	if delete_on_no_nodes and get_child_count() < 1:
-		queue_free()
 
 
 @rpc("authority", "call_local")
@@ -53,11 +56,11 @@ func auth_multiplayer_sync(delta):
 func client_multiplayer_sync(_delta):
 	if not _network_enable: return
 	if s_pos_difference.length_squared() > 0.2:
-		var interp = lerp(Vector3.ZERO, s_pos_difference, 0.05)
+		var interp = s_pos_difference * 0.05
 		s_pos_difference -= interp
 		global_position += interp
 	if s_rot_difference.length_squared() > 0.2:
-		var interp = lerp(Vector3.ZERO, s_rot_difference, 0.05)
+		var interp = s_rot_difference * 0.05
 		s_rot_difference -= interp
 		global_rotation += interp
 

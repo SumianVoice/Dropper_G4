@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://3bj3em7jt84h"]
+[gd_scene load_steps=14 format=3 uid="uid://3bj3em7jt84h"]
 
 [ext_resource type="Script" path="res://game.gd" id="1_5f6uj"]
 [ext_resource type="PackedScene" uid="uid://ct02ichkf0kqp" path="res://multiplayer/mpmenu.tscn" id="1_iq2vq"]
@@ -7,7 +7,6 @@
 [ext_resource type="PackedScene" uid="uid://4laa0bo584cf" path="res://src/objects/Player.tscn" id="5_4aisk"]
 [ext_resource type="Script" path="res://game/PlayerList.gd" id="5_kh7iv"]
 [ext_resource type="Script" path="res://Camera.gd" id="8_2hd7a"]
-[ext_resource type="PackedScene" uid="uid://b0as7pirn1m5e" path="res://src/builtin/EntityComponent.tscn" id="8_dv0w5"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_21w7m"]
 
@@ -38,16 +37,16 @@ uv1_triplanar = true
 [sub_resource type="BoxMesh" id="BoxMesh_56ov8"]
 material = SubResource("StandardMaterial3D_bhyaw")
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_vhllf"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_83o2f"]
-
 [node name="game" type="Node3D"]
 script = ExtResource("1_5f6uj")
 
+[node name="world" type="Node3D" parent="."]
+
 [node name="MultiplayerSpawnerRoot" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://src/builtin/EntityComponent.tscn", "res://src/builtin/Entity.tscn")
-spawn_path = NodePath("..")
+spawn_path = NodePath("../world")
+
+[node name="static" type="Node3D" parent="."]
 
 [node name="multiplayer_connector" parent="." node_paths=PackedStringArray("peers_node") instance=ExtResource("1_iq2vq")]
 visible = false
@@ -101,13 +100,5 @@ shape = SubResource("BoxShape3D_21w7m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D/StaticBody3D"]
 mesh = SubResource("BoxMesh_56ov8")
-
-[node name="Component" parent="." instance=ExtResource("8_dv0w5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.467497, 1.52283, -1.68334)
-shape = SubResource("BoxShape3D_vhllf")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Component"]
-mesh = SubResource("BoxMesh_83o2f")
-metadata/_edit_lock_ = true
 
 [connection signal="pressed" from="StartButton" to="StartButton" method="_on_pressed"]

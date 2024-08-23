@@ -9,7 +9,7 @@ var since_jump : float = 0
 
 var inhabited = false
 
-var picked_up : Node3D
+var picked_up : EntityComponentHost
 
 var peer
 
@@ -79,7 +79,9 @@ func do_control(delta):
 	apply_movement(delta)
 
 func process_character_input():
-	input_direction = Input.get_vector("move_left", "move_right", "move_down", "move_up")
+	input_direction = Input.get_vector(
+		"move_left", "move_right", "move_down", "move_up"
+	)
 	input_jump = Input.is_action_just_pressed("move_jump")
 
 func apply_movement(delta: float):
@@ -96,8 +98,16 @@ func apply_movement(delta: float):
 	var right = forward.cross(floor_normal)
 	var dir = ((forward * input_direction.y) + (right * input_direction.x)).normalized()
 	if dir:
-		var move_forc = air_force if not is_on_floor else run_force if is_running else walk_force
+		var move_forc = (air_force if not is_on_floor else run_force
+			if is_running else walk_force)
 		apply_central_impulse(dir * move_forc * delta)
+	
+	if Input.is_action_just_pressed("move_jump"):
+		var com : EntityComponentHost = \
+			load("res://src/objects/components/ec_test_component.tscn").instantiate()
+		com.name = str(randi())
+		GameManager.world.add_child(com, true)
+		com.global_position.y += 2
 
 
 func get_ray_selected():
@@ -108,11 +118,11 @@ func get_ray_selected():
 
 func on_step_pickup(_delta):
 	if picked_up == null:
-		var sel = get_ray_selected()
+		var sel = get_ray_selected() as Node
 		if sel: sel = sel.get_parent()
 		if (sel is EntityComponent) and (sel.get_parent() is Entity):
 			sel = sel as EntityComponent
-			picked_up = sel
+			picked_up = sel.entity_component
 			picked_up.on_pickup(self, null)
 			print("PICK UP")
 	elif Input.is_action_just_released("interact") and picked_up != null:
@@ -121,7 +131,7 @@ func on_step_pickup(_delta):
 		print("DROPPED")
 	if picked_up == null: return
 	
-	picked_up.global_position = drag_node.global_position
+	picked_up.component.global_position = drag_node.global_position
 
 
 
