@@ -21,6 +21,7 @@ func _ready():
 	var col : CollisionShape3D = $Component/Area3D/CollisionShape3D
 	if not component: component = $Component
 	col.shape = component.shape
+	multiplayer.allow_object_decoding = true
 
 func _process(_delta):
 	if not MultiplayerSystem.is_auth(self): return
@@ -28,13 +29,15 @@ func _process(_delta):
 	reparent_grace -= _delta
 
 @rpc("authority", "call_local")
-func _reparent(to_node, rel_pos=null):
+func _reparent(to_node, rel_pos=null, rel_rot=null):
 	to_node = get_tree().root.get_node_or_null(to_node)
 	print(" reparent set to " + str(to_node))
 	if to_node == null: return
 	component.reparent(to_node, true)
 	if rel_pos == null: rel_pos = Vector3(0,0,0)
+	if rel_rot == null: rel_rot = Vector3(0,0,0)
 	component.position = rel_pos
+	component.rotation = rel_rot
 
 func check_has_entity_parent():
 	if not MultiplayerSystem.is_auth(self): return

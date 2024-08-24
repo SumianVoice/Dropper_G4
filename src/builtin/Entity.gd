@@ -61,8 +61,8 @@ func client_multiplayer_sync(_delta):
 		var interp = s_pos_difference * 0.05
 		s_pos_difference -= interp
 		global_position += interp
-	if s_rot_difference.length_squared() > 0.2:
-		var interp = s_rot_difference * 0.05
+	if s_rot_difference.length_squared() > 0.01:
+		var interp = s_rot_difference * 1
 		s_rot_difference -= interp
 		global_rotation += interp
 
@@ -75,4 +75,4 @@ func update_pos(pos:Vector3):
 	s_pos_difference = pos - global_position
 @rpc("authority", "call_local")
 func update_rotation(rot:Vector3):
-	s_rot_difference = rot - global_position
+	s_rot_difference = rot - global_rotation
