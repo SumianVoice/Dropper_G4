@@ -57,8 +57,8 @@ func auth_multiplayer_sync(delta):
 
 func client_multiplayer_sync(_delta):
 	if not _network_enable: return
-	if s_pos_difference.length_squared() > 0.2:
-		var interp = s_pos_difference * 0.05
+	if s_pos_difference.length_squared() > 0.01:
+		var interp = s_pos_difference * 1
 		s_pos_difference -= interp
 		global_position += interp
 	if s_rot_difference.length_squared() > 0.01:
@@ -67,12 +67,16 @@ func client_multiplayer_sync(_delta):
 		global_rotation += interp
 
 
-@rpc("authority", "call_remote")
+@rpc("authority", "call_remote", "unreliable")
 func update_velocity(vel:Vector3):
 	linear_velocity = vel
-@rpc("authority", "call_local")
+@rpc("authority", "call_local", "unreliable")
 func update_pos(pos:Vector3):
 	s_pos_difference = pos - global_position
-@rpc("authority", "call_local")
+@rpc("authority", "call_local", "reliable")
+func set_pos(pos:Vector3):
+	s_pos_difference = Vector3(0,0,0)
+	global_position = pos
+@rpc("authority", "call_local", "unreliable")
 func update_rotation(rot:Vector3):
 	s_rot_difference = rot - global_rotation

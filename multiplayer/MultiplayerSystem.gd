@@ -12,6 +12,11 @@ var player_count = 0
 
 signal on_peer_connected(id)
 
+static func peer_print(msg:String):
+	var t = str(instance.multiplayer.get_unique_id())
+	t = "[" + t + "] "
+	print(t + msg)
+
 func _ready():
 	if instance:
 		queue_free()
@@ -29,6 +34,12 @@ func _ready():
 func _process(_delta):
 	pass
 
+static func is_server():
+	return server_status == 1
+
+static func get_auth(obj:Node):
+	if server_status <= 0: return 1
+	return obj.multiplayer.get_unique_id()
 
 static func is_auth(obj):
 	if server_status <= 0: return false

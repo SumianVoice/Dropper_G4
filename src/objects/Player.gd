@@ -2,9 +2,7 @@ extends CoreCharacter
 class_name Player
 
 
-@export var sensitivity: float = 0.2
-var x_rotation : float
-var y_rotation : float
+@export var mouse_sensitivity: float = 0.2
 var since_jump : float = 0
 
 var inhabited = false
@@ -19,12 +17,14 @@ var peer
 @onready var raycast_select : RayCast3D = $camera/raycast_select
 @onready var drag_node : Node3D = $camera/drag_node
 
+
 func _input(event):
 	if not MultiplayerSystem.is_auth(self): return
-	if event is InputEventMouseMotion and \
-	Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		x_rotation += -event.relative.y * sensitivity
-		camera.rotate_y(deg_to_rad(-event.relative.x * sensitivity))
+	if (event is InputEventMouseMotion) and \
+	(Input.mouse_mode == Input.MOUSE_MODE_CAPTURED):
+		camera.rotate_y(deg_to_rad(-event.relative.x * mouse_sensitivity))
+		camera.rotation_degrees.x += -event.relative.y * mouse_sensitivity
+		camera.rotation_degrees.x = clampf(camera.rotation_degrees.x, -80, 80)
 		collision.rotation.y = camera.rotation.y
 		visuals.rotation.y = camera.rotation.y
 	
@@ -34,28 +34,48 @@ func _input(event):
 		else:
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	
-	if Input.is_action_just_pressed("move_jump"):
+	if Input.is_action_just_pressed("secondary_use") \
+	and MultiplayerSystem.is_server():
 		var path = "res://src/objects/components/ec_test_component.tscn"
 		var com : EntityComponentHost =\
-			GameManager.instance.spawn_object(path, str(randi()) + "COM")
+			GameManager.spawn_object(path, "ECH" + str(randi()))
 		com.global_position.y += 2
 		print("CREATED A COMPONENT")
 
+
+var _t_ctrl = 0
 func _process(delta):
-	super(delta)
-	x_rotation = clampf(x_rotation, -80, 80)
-	camera.rotation_degrees.x = x_rotation
-	
+	## PLAYER CLIENT
 	if MultiplayerSystem.is_auth(self):
-		if not inhabited:
-			inhabited = true
-			inhabit()
+		auth_step(delta)
+	## ALL OTHER CLIENTS
 	else:
-		if inhabited:
-			inhabited = false
-			deinhabit()
+		peer_step(delta)
 	
-	on_step_pickup(delta)
+	## SERVER HOST ONLY
+	if MultiplayerSystem.is_server():
+		server_step(delta)
+	
+	super(delta)
+
+
+func auth_step(delta):
+	if not inhabited:
+		inhabited = true
+		inhabit()
+	get_all_controls()
+	if _t_ctrl > 0: _t_ctrl -= delta
+	else:
+		_t_ctrl += 0.02
+		update_ctrl.rpc(dict_to_ctrl_bits())
+
+func peer_step(delta):
+	if inhabited:
+		inhabited = false
+		deinhabit()
+
+func server_step(delta):
+	host_on_step_pickup(delta)
 
 
 func _ready():
@@ -85,11 +105,13 @@ func do_control(delta):
 	process_character_input()
 	apply_movement(delta)
 
+
 func process_character_input():
 	input_direction = Input.get_vector(
 		"move_left", "move_right", "move_down", "move_up"
 	)
 	input_jump = Input.is_action_just_pressed("move_jump")
+
 
 func apply_movement(delta: float):
 	if input_jump and since_jump > 0.1:
@@ -116,17 +138,18 @@ func get_ray_selected():
 	print(raycast_select.get_collider())
 	return raycast_select.get_collider()
 
-func on_step_pickup(_delta):
+
+func host_on_step_pickup(_delta):
 	if picked_up == null:
 		var sel = get_ray_selected() as Node
 		if sel: sel = sel.get_parent()
 		if (sel is EntityComponent) and (sel.get_parent() is Entity):
 			sel = sel as EntityComponent
-			picked_up = sel.entity_component
-			picked_up.on_pickup(self, null)
+			picked_up = sel.entity_component_host as EntityComponentHost
+			picked_up.request_pickup.rpc_id(1, self.get_path(), null)
 			print("PICK UP")
 	elif Input.is_action_just_released("interact") and picked_up != null:
-		picked_up.on_drop(self, null)
+		picked_up.request_drop.rpc_id(1, self.get_path(), null)
 		picked_up = null
 		print("DROPPED")
 	if picked_up == null: return
@@ -163,6 +186,43 @@ func client_multiplayer_sync(delta):
 		visuals.rotation.y = camera.global_rotation.y
 
 
-@rpc("authority", "call_local")
+@rpc("authority", "call_local", "unreliable")
 func update_look_rotation(rot:Vector3):
 	s_look_rot = rot
+
+static var CTRLINDEX : Array = [
+	"move_up","move_down","move_left","move_right","move_jump",
+	"interact","use","secondary_use"
+]
+
+var ctrl : Dictionary = {}
+var ctrl_bits = 0
+
+func get_all_controls():
+	for n in range(0, CTRLINDEX.size()):
+		var cname = CTRLINDEX[n]
+		ctrl[cname] = Input.is_action_pressed(cname)
+
+func ctrl_bits_to_dict():
+	ctrl_bits = 0
+	for n in range(0, CTRLINDEX.size()):
+		var cname = CTRLINDEX[n]
+		if ctrl_bits & (1 << n) > 0:
+			ctrl[cname] = true
+		else:
+			ctrl[cname] = false
+	return ctrl
+
+func dict_to_ctrl_bits():
+	ctrl_bits = 0
+	for n in range(0, CTRLINDEX.size()):
+		var cname = CTRLINDEX[n]
+		var v = 1 if (ctrl.get(cname, false) == true) else 0
+		ctrl_bits |= v << n
+	return ctrl_bits
+
+@rpc("authority", "call_remote", "unreliable")
+func update_ctrl(ctrl_int=0):
+	ctrl_bits = ctrl_int
+	ctrl_bits_to_dict()
+

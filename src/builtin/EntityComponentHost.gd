@@ -25,7 +25,7 @@ func _ready():
 
 func _process(_delta):
 	if not MultiplayerSystem.is_auth(self): return
-	check_has_entity_parent()
+	host_check_has_entity_parent()
 	reparent_grace -= _delta
 
 @rpc("authority", "call_local")
@@ -39,7 +39,7 @@ func _reparent(to_node, rel_pos=null, rel_rot=null):
 	component.position = rel_pos
 	component.rotation = rel_rot
 
-func check_has_entity_parent():
+func host_check_has_entity_parent():
 	if not MultiplayerSystem.is_auth(self): return
 	if reparent_grace > 0: return
 	var parent = component.get_parent()
@@ -47,27 +47,35 @@ func check_has_entity_parent():
 		reparent_grace = 0.5
 		print("  REPARENTING --> PID " + str(multiplayer.get_unique_id()))
 		var new_ent : Entity = Entity.instantiate()
-		new_ent.name = str(randi()) + "ENT"
-		#GameManager.world_spawner.spawn(new_ent)
+		new_ent.name = "ENT" + str(randi())
 		GameManager.world.add_child(new_ent)
-		#GameManager.instance.spawn_object.rpc(Entity.scene_path, new_ent.name)
-		new_ent.global_position = component.global_position
-		new_ent.update_pos.rpc(component.global_position)
-		#print(new_ent.get_path())
-		_reparent.rpc(new_ent.get_path(), null)
+		new_ent.set_pos.rpc(component.global_position)
+		_reparent.rpc(new_ent.get_path(), null, null)
 
-func on_drop(_player, _wield):
+@rpc("authority", "call_local", "reliable")
+func sync_on_drop(_player, _wield):
+	MultiplayerSystem.peer_print("drop")
 	picked_up_by = null
 
-func on_pickup(_player, _wield):
-	print("pickup")
-	_reparent.rpc(GameManager.world.get_path(), null)
+@rpc("authority", "call_local", "reliable")
+func sync_on_pickup(_player, _wield):
+	MultiplayerSystem.peer_print("pickup")
 	picked_up_by = _player
 
-func on_interact(_player, _wield):
-	on_pickup.rpc(_player, _wield)
+@rpc("authority", "call_local", "reliable")
+func sync_on_interact(_player, _wield):
+	print("[ERROR] NO on_interact func listed, something is \
+	calling this when it shouldn't")
 
-@rpc("any_peer", "call_local")
+
+@rpc("any_peer", "call_local", "reliable")
 func request_pickup(_player, _wield):
-	pass
+	if not MultiplayerSystem.is_auth(self): return
+	if picked_up_by != null: return
+	_reparent.rpc(GameManager.world.get_path(), null)
+	sync_on_pickup.rpc(_player, _wield)
 
+@rpc("any_peer", "call_local", "reliable")
+func request_drop(_player, _wield):
+	if not MultiplayerSystem.is_auth(self): return
+	sync_on_drop.rpc(_player, _wield)

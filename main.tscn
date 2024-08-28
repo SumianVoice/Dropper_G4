@@ -43,7 +43,7 @@ script = ExtResource("1_5f6uj")
 [node name="world" type="Node3D" parent="."]
 
 [node name="MultiplayerSpawnerRoot" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://src/builtin/EntityComponent.tscn", "res://src/builtin/Entity.tscn")
+_spawnable_scenes = PackedStringArray("res://src/builtin/EntityComponent.tscn", "res://src/builtin/Entity.tscn", "res://src/objects/components/ec_test_component.tscn")
 spawn_path = NodePath("../world")
 
 [node name="static" type="Node3D" parent="."]
