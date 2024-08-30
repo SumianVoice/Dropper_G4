@@ -23,10 +23,19 @@ func _ready():
 	col.shape = component.shape
 	multiplayer.allow_object_decoding = true
 
-func _process(_delta):
+var _t_sync = 0
+
+func _process(delta):
 	if not MultiplayerSystem.is_auth(self): return
 	host_check_has_entity_parent()
-	reparent_grace -= _delta
+	reparent_grace -= delta
+	
+	if _t_sync > 0:
+		_t_sync -= delta
+	else:
+		_t_sync += 0.1
+		sync_position.rpc(position)
+		sync_rotation.rpc(rotation)
 
 @rpc("authority", "call_local")
 func _reparent(to_node, rel_pos=null, rel_rot=null):
@@ -67,7 +76,6 @@ func sync_on_interact(_player, _wield):
 	print("[ERROR] NO on_interact func listed, something is \
 	calling this when it shouldn't")
 
-
 @rpc("any_peer", "call_local", "reliable")
 func request_pickup(_player, _wield):
 	if not MultiplayerSystem.is_auth(self): return
@@ -79,3 +87,13 @@ func request_pickup(_player, _wield):
 func request_drop(_player, _wield):
 	if not MultiplayerSystem.is_auth(self): return
 	sync_on_drop.rpc(_player, _wield)
+
+
+@rpc("authority", "call_remote", "reliable")
+func sync_position(pos:Vector3):
+	position = pos
+	MultiplayerSystem.peer_print(str(global_position))
+
+@rpc("authority", "call_remote", "reliable")
+func sync_rotation(rot:Vector3):
+	rotation = rot

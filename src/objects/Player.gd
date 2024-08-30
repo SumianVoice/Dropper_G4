@@ -56,6 +56,10 @@ func _process(delta):
 	if MultiplayerSystem.is_server():
 		server_step(delta)
 	
+	for n in range(0, CTRLINDEX.size()):
+		var cname = CTRLINDEX[n]
+		last_ctrl[cname] = ctrl.get(cname, false)
+	
 	super(delta)
 
 
@@ -64,7 +68,8 @@ func auth_step(delta):
 		inhabited = true
 		inhabit()
 	get_all_controls()
-	if _t_ctrl > 0: _t_ctrl -= delta
+	if _t_ctrl > 0:
+		_t_ctrl -= delta
 	else:
 		_t_ctrl += 0.02
 		update_ctrl.rpc(dict_to_ctrl_bits())
@@ -76,10 +81,15 @@ func peer_step(delta):
 
 func server_step(delta):
 	host_on_step_pickup(delta)
+	#print("[" + str(multiplayer.get_unique_id()) + "] CTRL " + str(ctrl_bits))
 
 
 func _ready():
 	super()
+	for n in range(0, CTRLINDEX.size()):
+		var cname = CTRLINDEX[n]
+		last_ctrl[cname] = false
+		ctrl[cname] = false
 
 
 func inhabit():
@@ -102,15 +112,12 @@ func do_control(delta):
 	
 	since_jump += delta
 	
-	process_character_input()
-	apply_movement(delta)
-
-
-func process_character_input():
 	input_direction = Input.get_vector(
 		"move_left", "move_right", "move_down", "move_up"
 	)
 	input_jump = Input.is_action_just_pressed("move_jump")
+	
+	apply_movement(delta)
 
 
 func apply_movement(delta: float):
@@ -133,14 +140,17 @@ func apply_movement(delta: float):
 
 
 func get_ray_selected():
-	if not Input.is_action_just_pressed("interact"): return
+	if not ctrl["interact"]: return
 	if not raycast_select.is_colliding(): return null
 	print(raycast_select.get_collider())
 	return raycast_select.get_collider()
 
 
 func host_on_step_pickup(_delta):
-	if picked_up == null:
+	if ctrl["interact"] and not last_ctrl["interact"]:
+		print("INTERACT PRESSED")
+	
+	if picked_up == null and ctrl["interact"]:
 		var sel = get_ray_selected() as Node
 		if sel: sel = sel.get_parent()
 		if (sel is EntityComponent) and (sel.get_parent() is Entity):
@@ -148,10 +158,11 @@ func host_on_step_pickup(_delta):
 			picked_up = sel.entity_component_host as EntityComponentHost
 			picked_up.request_pickup.rpc_id(1, self.get_path(), null)
 			print("PICK UP")
-	elif Input.is_action_just_released("interact") and picked_up != null:
+	elif (not ctrl["interact"]) and picked_up != null:
 		picked_up.request_drop.rpc_id(1, self.get_path(), null)
 		picked_up = null
 		print("DROPPED")
+	
 	if picked_up == null: return
 	
 	picked_up.component.global_position = drag_node.global_position
@@ -176,11 +187,11 @@ func angle_move_toward(a, b, r):
 
 func client_multiplayer_sync(delta):
 	if not super(delta): return
-	if s_look_rot.length_squared() > 0.2:
+	if abs(angle_difference(s_look_rot.y, camera.rotation.y)) > 0.01:
 		var interp = Vector3(
-			lerp_angle(camera.rotation.x, s_look_rot.x, 0.01),
-			lerp_angle(camera.rotation.y, s_look_rot.y, 0.01),
-			lerp_angle(camera.rotation.z, s_look_rot.z, 0.01),
+			lerp_angle(camera.rotation.x, s_look_rot.x, 0.04),
+			lerp_angle(camera.rotation.y, s_look_rot.y, 0.04),
+			lerp_angle(camera.rotation.z, s_look_rot.z, 0.04),
 		)
 		camera.rotation = interp
 		visuals.rotation.y = camera.global_rotation.y
@@ -195,18 +206,21 @@ static var CTRLINDEX : Array = [
 	"interact","use","secondary_use"
 ]
 
+var last_ctrl : Dictionary = {}
 var ctrl : Dictionary = {}
 var ctrl_bits = 0
 
 func get_all_controls():
 	for n in range(0, CTRLINDEX.size()):
 		var cname = CTRLINDEX[n]
+		last_ctrl[cname] = ctrl.get(cname, false)
 		ctrl[cname] = Input.is_action_pressed(cname)
 
 func ctrl_bits_to_dict():
-	ctrl_bits = 0
+	#print("[" + str(multiplayer.get_unique_id()) + "] IN " + str(ctrl_bits))
 	for n in range(0, CTRLINDEX.size()):
 		var cname = CTRLINDEX[n]
+		last_ctrl[cname] = ctrl.get(cname, false)
 		if ctrl_bits & (1 << n) > 0:
 			ctrl[cname] = true
 		else:
@@ -218,11 +232,16 @@ func dict_to_ctrl_bits():
 	for n in range(0, CTRLINDEX.size()):
 		var cname = CTRLINDEX[n]
 		var v = 1 if (ctrl.get(cname, false) == true) else 0
+		#print(cname + " is " + str(v))
 		ctrl_bits |= v << n
+	#print("[" + str(multiplayer.get_unique_id()) + "] IN " + str(ctrl_bits))
 	return ctrl_bits
 
-@rpc("authority", "call_remote", "unreliable")
+@rpc("authority", "call_local", "reliable")
 func update_ctrl(ctrl_int=0):
 	ctrl_bits = ctrl_int
 	ctrl_bits_to_dict()
+	#if multiplayer.get_unique_id() == 1:
+		#print(ctrl_bits)
+		#print("[" + str(multiplayer.get_unique_id()) + "] " + str(ctrl_bits))
 
