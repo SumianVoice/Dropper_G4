@@ -21,11 +21,13 @@ func _ready():
 	var col : CollisionShape3D = $Component/Area3D/CollisionShape3D
 	if not component: component = $Component
 	col.shape = component.shape
-	multiplayer.allow_object_decoding = true
 
 var _t_sync = 0
 
 func _process(delta):
+	
+	component.position = lerp(component.position, s_position, 0.01)
+	
 	if not MultiplayerSystem.is_auth(self): return
 	host_check_has_entity_parent()
 	reparent_grace -= delta
@@ -34,8 +36,8 @@ func _process(delta):
 		_t_sync -= delta
 	else:
 		_t_sync += 0.1
-		sync_position.rpc(position)
-		sync_rotation.rpc(rotation)
+		sync_position.rpc(component.position)
+		sync_rotation.rpc(component.rotation)
 
 @rpc("authority", "call_local")
 func _reparent(to_node, rel_pos=null, rel_rot=null):
@@ -43,10 +45,11 @@ func _reparent(to_node, rel_pos=null, rel_rot=null):
 	print(" reparent set to " + str(to_node))
 	if to_node == null: return
 	component.reparent(to_node, true)
-	if rel_pos == null: rel_pos = Vector3(0,0,0)
-	if rel_rot == null: rel_rot = Vector3(0,0,0)
-	component.position = rel_pos
-	component.rotation = rel_rot
+	if rel_pos != null:
+		component.position = rel_pos
+	if rel_rot != null:
+		component.rotation = rel_rot
+	s_position = component.position
 
 func host_check_has_entity_parent():
 	if not MultiplayerSystem.is_auth(self): return
@@ -73,8 +76,7 @@ func sync_on_pickup(_player, _wield):
 
 @rpc("authority", "call_local", "reliable")
 func sync_on_interact(_player, _wield):
-	print("[ERROR] NO on_interact func listed, something is \
-	calling this when it shouldn't")
+	MultiplayerSystem.peer_print("interact")
 
 @rpc("any_peer", "call_local", "reliable")
 func request_pickup(_player, _wield):
@@ -88,12 +90,12 @@ func request_drop(_player, _wield):
 	if not MultiplayerSystem.is_auth(self): return
 	sync_on_drop.rpc(_player, _wield)
 
+var s_position : Vector3 = Vector3(0,0,0)
 
 @rpc("authority", "call_remote", "reliable")
 func sync_position(pos:Vector3):
-	position = pos
-	MultiplayerSystem.peer_print(str(global_position))
+	s_position = pos
 
 @rpc("authority", "call_remote", "reliable")
 func sync_rotation(rot:Vector3):
-	rotation = rot
+	component.rotation = rot

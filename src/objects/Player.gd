@@ -187,14 +187,13 @@ func angle_move_toward(a, b, r):
 
 func client_multiplayer_sync(delta):
 	if not super(delta): return
-	if abs(angle_difference(s_look_rot.y, camera.rotation.y)) > 0.01:
-		var interp = Vector3(
-			lerp_angle(camera.rotation.x, s_look_rot.x, 0.04),
-			lerp_angle(camera.rotation.y, s_look_rot.y, 0.04),
-			lerp_angle(camera.rotation.z, s_look_rot.z, 0.04),
-		)
-		camera.rotation = interp
-		visuals.rotation.y = camera.global_rotation.y
+	var interp = Vector3(
+		lerp_angle(camera.rotation.x, s_look_rot.x, 0.04),
+		lerp_angle(camera.rotation.y, s_look_rot.y, 0.04),
+		lerp_angle(camera.rotation.z, s_look_rot.z, 0.04),
+	)
+	camera.rotation = interp
+	visuals.rotation.y = camera.global_rotation.y
 
 
 @rpc("authority", "call_local", "unreliable")
