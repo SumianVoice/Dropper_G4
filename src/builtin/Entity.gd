@@ -20,10 +20,17 @@ func _physics_process(delta):
 	delta *= physics_timescale
 	linear_velocity.y -= 9 * delta
 
+func get_component_count():
+	var c = 0
+	for child in get_children():
+		if child is EntityComponent:
+			c += 1
+	return c
+
 func _process(delta):
 	if MultiplayerSystem.is_auth(self):
 		auth_multiplayer_sync(delta)
-		if delete_on_no_nodes and get_child_count() < 1:
+		if delete_on_no_nodes and get_component_count() < 1:
 			print("[DESTROY] PID " + str(multiplayer.get_unique_id()) +\
 			"   DESTROYED NAME   " + name)
 			queue_free()

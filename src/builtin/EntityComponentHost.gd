@@ -13,6 +13,8 @@ static func instantiate():
 @export var torque : float = 0
 @export var speed : float = 0
 
+@onready var area : Area3D = $Component/Area3D
+
 var reparent_grace = 1
 
 var picked_up_by = null
@@ -40,16 +42,17 @@ func _process(delta):
 		sync_rotation.rpc(component.rotation)
 
 @rpc("authority", "call_local")
-func _reparent(to_node, rel_pos=null, rel_rot=null):
+func _reparent(to_node, rel_pos=null, abs_rot=null):
 	to_node = get_tree().root.get_node_or_null(to_node)
 	print(" reparent set to " + str(to_node))
 	if to_node == null: return
 	component.reparent(to_node, true)
 	if rel_pos != null:
 		component.position = rel_pos
-	if rel_rot != null:
-		component.rotation = rel_rot
+	if abs_rot != null:
+		component.global_rotation = abs_rot
 	s_position = component.position
+
 
 func host_check_has_entity_parent():
 	if not MultiplayerSystem.is_auth(self): return
@@ -89,6 +92,12 @@ func request_pickup(_player, _wield):
 func request_drop(_player, _wield):
 	if not MultiplayerSystem.is_auth(self): return
 	sync_on_drop.rpc(_player, _wield)
+	for body in area.get_overlapping_bodies():
+		print(body)
+		if body is Entity:
+			var pos = component.global_position - body.global_position
+			var rot = component.global_rotation
+			_reparent.rpc(body.get_path(), pos, rot)
 
 var s_position : Vector3 = Vector3(0,0,0)
 
@@ -99,3 +108,4 @@ func sync_position(pos:Vector3):
 @rpc("authority", "call_remote", "reliable")
 func sync_rotation(rot:Vector3):
 	component.rotation = rot
+

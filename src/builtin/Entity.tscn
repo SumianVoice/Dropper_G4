@@ -1,6 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://cki6vxyjpk8jp"]
+[gd_scene load_steps=3 format=3 uid="uid://cki6vxyjpk8jp"]
 
 [ext_resource type="Script" path="res://src/builtin/Entity.gd" id="1_nfn3m"]
 
+[sub_resource type="SphereMesh" id="SphereMesh_uxhtp"]
+
 [node name="Entity" type="RigidBody3D"]
 script = ExtResource("1_nfn3m")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_uxhtp")

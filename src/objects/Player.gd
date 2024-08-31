@@ -159,13 +159,18 @@ func host_on_step_pickup(_delta):
 			picked_up.request_pickup.rpc_id(1, self.get_path(), null)
 			print("PICK UP")
 	elif (not ctrl["interact"]) and picked_up != null:
-		picked_up.request_drop.rpc_id(1, self.get_path(), null)
+		picked_up.request_drop.rpc_id(1, self.get_path(), picked_up)
 		picked_up = null
 		print("DROPPED")
 	
 	if picked_up == null: return
 	
 	picked_up.component.global_position = drag_node.global_position
+	
+	if (not last_ctrl["scroll_up"]) and ctrl["scroll_up"]:
+		picked_up.component.global_rotation.y += 15
+	if (not last_ctrl["scroll_down"]) and ctrl["scroll_down"]:
+		picked_up.component.global_rotation.y -= 15
 
 
 
@@ -202,7 +207,7 @@ func update_look_rotation(rot:Vector3):
 
 static var CTRLINDEX : Array = [
 	"move_up","move_down","move_left","move_right","move_jump",
-	"interact","use","secondary_use"
+	"interact","use","secondary_use","scroll_up","scroll_down"
 ]
 
 var last_ctrl : Dictionary = {}

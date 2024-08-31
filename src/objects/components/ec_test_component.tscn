@@ -3,8 +3,10 @@
 [ext_resource type="PackedScene" uid="uid://b0as7pirn1m5e" path="res://src/builtin/EntityComponent.tscn" id="1_st1lh"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_n7ftt"]
+size = Vector3(1, 0.4, 4)
 
 [sub_resource type="BoxMesh" id="BoxMesh_ppd7h"]
+size = Vector3(1, 0.4, 4)
 
 [node name="EntityComponent" instance=ExtResource("1_st1lh")]
 
