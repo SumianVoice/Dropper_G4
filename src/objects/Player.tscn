@@ -1,10 +1,26 @@
-[gd_scene load_steps=5 format=3 uid="uid://4laa0bo584cf"]
+[gd_scene load_steps=15 format=3 uid="uid://4laa0bo584cf"]
 
 [ext_resource type="Script" path="res://src/objects/Player.gd" id="1_6ie8s"]
+[ext_resource type="Script" path="res://src/objects/spritechar/Player_visuals_sprite.gd" id="2_iyxoi"]
+[ext_resource type="SpriteFrames" uid="uid://bo7q52xuyifrl" path="res://src/objects/spritechar/textures/player_animation/side.tres" id="3_sxntg"]
+[ext_resource type="SpriteFrames" uid="uid://sroeyafrcu0e" path="res://src/objects/spritechar/textures/alternate/side.tres" id="3_xthmq"]
+[ext_resource type="Script" path="res://src/objects/spritechar/SpriteFace.gd" id="4_fbt5h"]
+[ext_resource type="SpriteFrames" uid="uid://dmkem5pni1g6k" path="res://src/objects/spritechar/textures/player_animation/front.tres" id="4_hyofm"]
+[ext_resource type="SpriteFrames" uid="uid://do5ampywc6tfp" path="res://src/objects/spritechar/textures/alternate/front.tres" id="5_n8syy"]
+[ext_resource type="SpriteFrames" uid="uid://bhil20ig7nirb" path="res://src/objects/spritechar/textures/player_animation/back.tres" id="5_nna4t"]
+[ext_resource type="SpriteFrames" uid="uid://dknaj16187l0d" path="res://src/objects/spritechar/textures/alternate/back.tres" id="6_8a7uf"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tkglj"]
+albedo_color = Color(0.686275, 0.772549, 0.717647, 1)
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_4sipa"]
+material = SubResource("StandardMaterial3D_tkglj")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rl4mh"]
+albedo_color = Color(0, 0.739927, 0.88319, 1)
 
 [sub_resource type="PrismMesh" id="PrismMesh_3r3cx"]
+material = SubResource("StandardMaterial3D_rl4mh")
 size = Vector3(0.4, 0.4, 0.4)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s1mxe"]
@@ -38,5 +54,81 @@ skeleton = NodePath("../../collision")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -0.5)
 mesh = SubResource("PrismMesh_3r3cx")
 
+[node name="sprite" type="Node3D" parent="visuals" node_paths=PackedStringArray("player")]
+script = ExtResource("2_iyxoi")
+player = NodePath("../..")
+
+[node name="side" type="AnimatedSprite3D" parent="visuals/sprite"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0)
+visible = false
+pixel_size = 0.12
+alpha_cut = 2
+texture_filter = 2
+sprite_frames = ExtResource("3_xthmq")
+animation = &"walk"
+script = ExtResource("4_fbt5h")
+dot_min = -0.7
+dot_max = 0.7
+
+[node name="front" type="AnimatedSprite3D" parent="visuals/sprite"]
+transform = Transform3D(1, 0, -1.74846e-07, 0, 1, 0, 1.74846e-07, 0, 1, 0, 0, 0)
+visible = false
+pixel_size = 0.12
+alpha_cut = 2
+texture_filter = 2
+sprite_frames = ExtResource("5_n8syy")
+animation = &"walk"
+script = ExtResource("4_fbt5h")
+dot_min = -1.0
+dot_max = -0.7
+
+[node name="back" type="AnimatedSprite3D" parent="visuals/sprite"]
+transform = Transform3D(1, 0, 2.13163e-14, 0, 1, 0, -2.13163e-14, 0, 1, 0, 0, 0)
+visible = false
+pixel_size = 0.12
+alpha_cut = 2
+texture_filter = 2
+sprite_frames = ExtResource("6_8a7uf")
+animation = &"walk"
+script = ExtResource("4_fbt5h")
+dot_min = 0.5
+dot_max = 1.0
+
 [node name="collision" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_s1mxe")
+
+[node name="side" type="AnimatedSprite3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0.28, 0)
+visible = false
+pixel_size = 0.08
+alpha_cut = 2
+texture_filter = 2
+sprite_frames = ExtResource("3_sxntg")
+animation = &"walk"
+script = ExtResource("4_fbt5h")
+dot_min = -0.7
+dot_max = 0.7
+
+[node name="front" type="AnimatedSprite3D" parent="."]
+transform = Transform3D(1, 0, -1.74846e-07, 0, 1, 0, 1.74846e-07, 0, 1, 0, 0.28, 0)
+visible = false
+pixel_size = 0.08
+alpha_cut = 2
+texture_filter = 2
+sprite_frames = ExtResource("4_hyofm")
+animation = &"idle"
+script = ExtResource("4_fbt5h")
+dot_min = -1.0
+dot_max = -0.7
+
+[node name="back" type="AnimatedSprite3D" parent="."]
+transform = Transform3D(1, 0, 2.13163e-14, 0, 1, 0, -2.13163e-14, 0, 1, 0, 0.28, 0)
+visible = false
+pixel_size = 0.08
+alpha_cut = 2
+texture_filter = 2
+sprite_frames = ExtResource("5_nna4t")
+animation = &"idle"
+script = ExtResource("4_fbt5h")
+dot_min = 0.5
+dot_max = 1.0

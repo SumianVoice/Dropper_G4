@@ -105,9 +105,9 @@ func do_control(delta):
 	
 	if is_on_floor:
 		apply_force(Vector3(
-			linear_velocity.x * -0.1,
+			linear_velocity.x * -0.2,
 			0,
-			linear_velocity.z * -0.1,
+			linear_velocity.z * -0.2,
 		))
 	
 	since_jump += delta

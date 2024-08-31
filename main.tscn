@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://3bj3em7jt84h"]
+[gd_scene load_steps=19 format=3 uid="uid://3bj3em7jt84h"]
 
 [ext_resource type="Script" path="res://game.gd" id="1_5f6uj"]
 [ext_resource type="PackedScene" uid="uid://ct02ichkf0kqp" path="res://multiplayer/mpmenu.tscn" id="1_iq2vq"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://4laa0bo584cf" path="res://src/objects/Player.tscn" id="5_4aisk"]
 [ext_resource type="Script" path="res://game/PlayerList.gd" id="5_kh7iv"]
 [ext_resource type="Script" path="res://Camera.gd" id="8_2hd7a"]
+[ext_resource type="Texture2D" uid="uid://bth6e7sodwvbe" path="res://src/objects/static/tree Yikescloud CC BY 4 01.png" id="8_5q721"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_21w7m"]
 
@@ -36,6 +37,33 @@ uv1_triplanar = true
 
 [sub_resource type="BoxMesh" id="BoxMesh_56ov8"]
 material = SubResource("StandardMaterial3D_bhyaw")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_p42ip"]
+noise_type = 0
+seed = 80
+frequency = 0.046
+fractal_type = 2
+fractal_lacunarity = 1.15
+fractal_gain = 0.86
+fractal_weighted_strength = 0.7
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_vwta4"]
+seamless = true
+as_normal_map = true
+color_ramp = SubResource("Gradient_g80cs")
+noise = SubResource("FastNoiseLite_p42ip")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wyilk"]
+albedo_color = Color(0.407334, 0.388729, 0.338729, 1)
+normal_enabled = true
+normal_scale = 0.35
+normal_texture = SubResource("NoiseTexture2D_vwta4")
+uv1_scale = Vector3(2, 2, 2)
+uv1_triplanar = true
+texture_filter = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_lqj4k"]
+material = SubResource("StandardMaterial3D_wyilk")
 
 [node name="game" type="Node3D"]
 script = ExtResource("1_5f6uj")
@@ -90,6 +118,22 @@ script = ExtResource("8_2hd7a")
 transform = Transform3D(-0.283262, -0.840627, -0.461638, 0.371475, -0.539948, 0.75529, -0.884177, 0.0424575, 0.465218, -2.93085, 5.42221, 1.48369)
 shadow_enabled = true
 
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.12828, 0)
+cast_shadow = 2
+pixel_size = 0.1285
+alpha_cut = 2
+texture_filter = 2
+texture = ExtResource("8_5q721")
+
+[node name="Sprite3D2" type="Sprite3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.1, 3.12828, 0.2)
+cast_shadow = 2
+pixel_size = 0.1285
+alpha_cut = 2
+texture_filter = 2
+texture = ExtResource("8_5q721")
+
 [node name="Node3D" type="Node3D" parent="."]
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Node3D"]
@@ -99,6 +143,10 @@ transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, -51, 0)
 shape = SubResource("BoxShape3D_21w7m")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D/StaticBody3D"]
+visible = false
 mesh = SubResource("BoxMesh_56ov8")
+
+[node name="MeshInstance3D pixel" type="MeshInstance3D" parent="Node3D/StaticBody3D"]
+mesh = SubResource("BoxMesh_lqj4k")
 
 [connection signal="pressed" from="StartButton" to="StartButton" method="_on_pressed"]
