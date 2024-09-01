@@ -168,9 +168,9 @@ func host_on_step_pickup(_delta):
 	picked_up.component.global_position = drag_node.global_position
 	
 	if (not last_ctrl["scroll_up"]) and ctrl["scroll_up"]:
-		picked_up.component.global_rotation.y += 15
+		picked_up.component.global_rotation.y += 0.4
 	if (not last_ctrl["scroll_down"]) and ctrl["scroll_down"]:
-		picked_up.component.global_rotation.y -= 15
+		picked_up.component.global_rotation.y -= 0.4
 
 
 
@@ -218,7 +218,7 @@ func get_all_controls():
 	for n in range(0, CTRLINDEX.size()):
 		var cname = CTRLINDEX[n]
 		last_ctrl[cname] = ctrl.get(cname, false)
-		ctrl[cname] = Input.is_action_pressed(cname)
+		ctrl[cname] = Input.is_action_pressed(cname) or Input.is_action_just_pressed(cname)
 
 func ctrl_bits_to_dict():
 	#print("[" + str(multiplayer.get_unique_id()) + "] IN " + str(ctrl_bits))

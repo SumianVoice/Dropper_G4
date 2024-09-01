@@ -37,7 +37,7 @@ func _process(delta):
 	if _t_sync > 0:
 		_t_sync -= delta
 	else:
-		_t_sync += 0.1
+		_t_sync += 0.05 + 0.1 * randf()
 		sync_position.rpc(component.position)
 		sync_rotation.rpc(component.rotation)
 
